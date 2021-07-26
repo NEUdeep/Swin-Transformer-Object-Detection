@@ -1,21 +1,22 @@
 _base_ = [
     '../_base_/models/cascade_mask_rcnn_swin_fpn.py',
-    '../_base_/datasets/coco_instance.py',
+    # '../_base_/datasets/coco_instance.py',
+    'configs/_base_/datasets/openBrand_detection.py',
     '../_base_/schedules/schedule_1x.py', '../_base_/default_runtime.py'
 ]
 
 model = dict(
     backbone=dict(
-        embed_dim=96,
-        depths=[2, 2, 6, 2],
-        num_heads=[3, 6, 12, 24],
+        embed_dim=128,
+        depths=[2, 2, 18, 2],
+        num_heads=[4, 8, 16, 32],
         window_size=7,
         ape=False,
-        drop_path_rate=0.2,
+        drop_path_rate=0.3,
         patch_norm=True,
         use_checkpoint=False
     ),
-    neck=dict(in_channels=[96, 192, 384, 768]),
+    neck=dict(in_channels=[128, 256, 512, 1024]),
     roi_head=dict(
         bbox_head=[
             dict(
@@ -26,7 +27,7 @@ model = dict(
                 conv_out_channels=256,
                 fc_out_channels=1024,
                 roi_feat_size=7,
-                num_classes=80,
+                num_classes=515, # 80 is coco;515 is openbrand
                 bbox_coder=dict(
                     type='DeltaXYWHBBoxCoder',
                     target_means=[0., 0., 0., 0.],
@@ -35,7 +36,7 @@ model = dict(
                 reg_decoded_bbox=True,
                 norm_cfg=dict(type='SyncBN', requires_grad=True),
                 loss_cls=dict(
-                    type='CrossEntropyLoss', use_sigmoid=False, loss_weight=1.0),
+                    type='SeesawLoss', use_sigmoid=False, loss_weight=1.0),
                 loss_bbox=dict(type='GIoULoss', loss_weight=10.0)),
             dict(
                 type='ConvFCBBoxHead',
@@ -45,7 +46,7 @@ model = dict(
                 conv_out_channels=256,
                 fc_out_channels=1024,
                 roi_feat_size=7,
-                num_classes=80,
+                num_classes=515,
                 bbox_coder=dict(
                     type='DeltaXYWHBBoxCoder',
                     target_means=[0., 0., 0., 0.],
@@ -54,7 +55,7 @@ model = dict(
                 reg_decoded_bbox=True,
                 norm_cfg=dict(type='SyncBN', requires_grad=True),
                 loss_cls=dict(
-                    type='CrossEntropyLoss', use_sigmoid=False, loss_weight=1.0),
+                    type='SeesawLoss', use_sigmoid=False, loss_weight=1.0),
                 loss_bbox=dict(type='GIoULoss', loss_weight=10.0)),
             dict(
                 type='ConvFCBBoxHead',
@@ -64,7 +65,7 @@ model = dict(
                 conv_out_channels=256,
                 fc_out_channels=1024,
                 roi_feat_size=7,
-                num_classes=80,
+                num_classes=515,
                 bbox_coder=dict(
                     type='DeltaXYWHBBoxCoder',
                     target_means=[0., 0., 0., 0.],
@@ -73,7 +74,7 @@ model = dict(
                 reg_decoded_bbox=True,
                 norm_cfg=dict(type='SyncBN', requires_grad=True),
                 loss_cls=dict(
-                    type='CrossEntropyLoss', use_sigmoid=False, loss_weight=1.0),
+                    type='SeesawLoss', use_sigmoid=False, loss_weight=1.0),
                 loss_bbox=dict(type='GIoULoss', loss_weight=10.0))
         ]))
 

@@ -1,4 +1,5 @@
 import os.path as osp
+import os
 
 import mmcv
 import numpy as np
@@ -56,18 +57,21 @@ class LoadImageFromFile(object):
         else:
             filename = results['img_info']['filename']
 
-        img_bytes = self.file_client.get(filename)
-        img = mmcv.imfrombytes(img_bytes, flag=self.color_type)
-        if self.to_float32:
-            img = img.astype(np.float32)
+        if os.path.exists(filename): # add to igonir
+            img_bytes = self.file_client.get(filename) # 
+            img = mmcv.imfrombytes(img_bytes, flag=self.color_type)
+            if self.to_float32:
+                img = img.astype(np.float32)
 
-        results['filename'] = filename
-        results['ori_filename'] = results['img_info']['filename']
-        results['img'] = img
-        results['img_shape'] = img.shape
-        results['ori_shape'] = img.shape
-        results['img_fields'] = ['img']
-        return results
+            results['filename'] = filename
+            results['ori_filename'] = results['img_info']['filename']
+            results['img'] = img
+            results['img_shape'] = img.shape
+            results['ori_shape'] = img.shape
+            results['img_fields'] = ['img']
+            return results
+        else:
+            pass
 
     def __repr__(self):
         repr_str = (f'{self.__class__.__name__}('
